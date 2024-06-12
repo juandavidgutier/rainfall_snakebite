@@ -54,9 +54,7 @@ warnings.filterwarnings('ignore')
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 
 
-
-
-######################################################################################################################################
+#%%#
 #import data top300
 data = pd.read_csv("D:/clases/UDES/articulo accidente ofidico/uniAndes/ci/manuscript/data_top300.csv", encoding='latin-1') 
 
@@ -65,8 +63,7 @@ data_col = data[['Code.DANE',
                  'SST3', 'SST4', 'SST34', 'SST12', 
                  'Esoi', 'soi', 
                  'NATL', 'SATL', 'TROP', 
-                 'deforest', 'forest',
-                 'Rgdp',
+                 'forest', 'Rgdp',
                  ]]
 
 
@@ -83,13 +80,10 @@ data_col.SATL = stats.zscore(data_col.SATL, nan_policy='omit')
 data_col.TROP = stats.zscore(data.TROP, nan_policy='omit')
 data_col.Rain = stats.zscore(data.Rain, nan_policy='omit')
 
-
 data_col = data_col.dropna()
 
-
-
 #####Rainfall
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['forest']].to_numpy().reshape(-1, 1)
@@ -141,6 +135,7 @@ scorer.fit(Y_val, T_val, X=X_val, W=W_val)
 rscore = [scorer.score(mdl) for _, mdl in models]
 print(rscore)#best model LinearDML
 
+#%%#
 #Estimation of ATE
 estimate_Rainfall =  LinearDML(model_y=reg1(), model_t=reg2(), discrete_treatment=False,
                                     linear_first_stages=False, cv=3, random_state=123)
@@ -151,7 +146,7 @@ estimate_Rainfall = estimate_Rainfall.dowhy
 estimate_Rainfall.fit(Y=Y, T=T, X=X, W=W, inference='statsmodels')
 
 # predict effect for each sample X
-estimate_Rainfall.effect(X) #ESTO ES EL CATE
+estimate_Rainfall.effect(X) 
 
 # ate
 ate_Rainfall = estimate_Rainfall.ate(X) 
@@ -162,7 +157,7 @@ ci_Rainfall = estimate_Rainfall.ate_interval(X)
 print(ci_Rainfall)
 
 
-
+#%%#
 # constant marginal effect
 #range of forest
 min_forest = 0
@@ -198,6 +193,8 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 
 
 
+
+#%%#
 #Refute tests
 #with random common cause
 random_Rainfall = estimate_Rainfall.refute_estimate(method_name="random_common_cause", random_state=123)
@@ -212,8 +209,10 @@ placebo_Rainfall = estimate_Rainfall.refute_estimate(method_name="placebo_treatm
 print(placebo_Rainfall)
 
 
+
+#%%#
 #New estimation CATE for soi
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['soi']].to_numpy().reshape(-1, 1)
@@ -249,7 +248,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1A
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -260,9 +259,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 
 
 
-
+#%%#
 #New estimation CATE for Esoi
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['Esoi']].to_numpy().reshape(-1, 1)
@@ -298,7 +297,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1B
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -309,9 +308,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 ) 
 
 
-
+#%%#
 #New estimation CATE for SST3
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['SST3']].to_numpy().reshape(-1, 1)
@@ -347,7 +346,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1C
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -358,9 +357,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 ) 
 
 
-
+#%%#
 #New estimation CATE for SST4
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['SST4']].to_numpy().reshape(-1, 1)
@@ -396,7 +395,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1D
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -407,12 +406,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 ) 
 
 
-
-
-
-
+#%%#
 #New estimation CATE for SST34
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['SST34']].to_numpy().reshape(-1, 1)
@@ -448,7 +444,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1E
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -459,9 +455,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 )
 
 
-
+#%%#
 #New estimation CATE for SST12
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['SST12']].to_numpy().reshape(-1, 1)
@@ -497,7 +493,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1F
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -509,10 +505,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 
 
 
-
-
+#%%#
 #New estimation CATE for NATL
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['NATL']].to_numpy().reshape(-1, 1)
@@ -548,7 +543,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1G
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -560,10 +555,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 
 
 
-
-
+#%%#
 #New estimation CATE for SATL
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['SATL']].to_numpy().reshape(-1, 1)
@@ -599,7 +593,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1H
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
@@ -610,9 +604,9 @@ ggplot(aes(x=X_test.flatten(), y=treatment_effects2))
 
 
 
-
+#%%#
 #New estimation CATE for TROP
-Y = data_col.excess.to_numpy() #Y = data_card['incidencia100k_cardiovasculares'].values
+Y = data_col.excess.to_numpy() 
 T = data_col.Rain.to_numpy()
 W = data_col[['soi', 'Esoi', 'SST3', 'SST4', 'SST34', 'SST12', 'NATL', 'SATL', 'TROP', 'forest']].to_numpy().reshape(-1, 10)
 X = data_col[['TROP']].to_numpy().reshape(-1, 1)
@@ -648,7 +642,7 @@ treatment_effects2 = est2_Rainfall.effect(X_test)
 te_lower2_cons, te_upper2_cons = est2_Rainfall.effect_interval(X_test)
 
 
-#Figure XXXXXC
+#Figure Supplement 1I
 (
 ggplot(aes(x=X_test.flatten(), y=treatment_effects2)) 
   + geom_line() 
